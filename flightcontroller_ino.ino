@@ -2,10 +2,16 @@
 
 
 SoftwareSerial Bluetooth(10,11);
-String throttle;
-String yaw;
-String roll;
-String pitch;
+String in_throttle;
+String in_yaw;
+String in_roll;
+String in_pitch;
+
+int values[6];
+int throttle;
+int yaw;
+int roll;
+int pitch;
 
 int tflag = 0;
 int yflag = 0;
@@ -26,7 +32,9 @@ void loop(){
   getInputs();
 }
 
-
+//=========================================================
+//           Read incoming values from controller
+//=========================================================
 void getInputs(){
   if(Bluetooth.available()){
       char ch = Bluetooth.read();
@@ -44,41 +52,46 @@ void getInputs(){
       }
       
       if(pflag && ch != 'P' && ch != ','){
-        pitch += ch;
+        in_pitch += ch;
       }
       
       if(rflag && ch != 'R' && ch != ','){
-        pitch += ch;
+        in_roll += ch;
       }
       
       if(tflag && ch != 'T' && ch != ','){
-        throttle += ch;
+        in_throttle += ch;
       }
       
       if(yflag && ch != 'Y' && ch != ','){
-        yaw += ch;
+        in_yaw += ch;
       }
       
       if(ch == ',' && tflag){
         tflag = 0;
-        Serial.println(throttle);
-        throttle = "";
+        throttle = in_throttle.toInt();
+        values[0] = throttle;
+        in_throttle = "";
       }
       if(ch == ',' && yflag){
         yflag = 0;
-        Serial.println(yaw);
-        yaw = "";
+        yaw = in_yaw.toInt();
+        values[1] = yaw;
+        in_yaw = "";
       }
       if(ch == ',' && pflag){
         pflag = 0;
-        Serial.println(pitch);
-        pitch = "";
+        pitch = in_pitch.toInt();
+        values[2] = pitch;
+        in_pitch = "";
       }
       if(ch == ',' && rflag){
         rflag = 0;
-        //Serial.println(roll);
-        roll = "";
+        roll = in_roll.toInt();
+        values[3] = roll;
+        in_roll = "";
       }
+      Serial.println(values)
   }
 }
 
